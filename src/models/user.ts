@@ -22,7 +22,7 @@ class User {
   @IsEmail()
   email: string;
 
-  @Column({ type: "varchar", length: 64 })
+  @Column({ length: 64 })
   @Length(4, 30)
   name: string;
 
@@ -38,6 +38,12 @@ class User {
 
   @UpdateDateColumn()
   updated: Date;
+}
+
+const userSchema = {
+  id: { type: "number", required: true, example: 1 },
+  name: { type: "string", required: true, example: "Aaron So" },
+  email: { type: "string", required: true, example: "aaron.so@test.com" }
 }
 
 function createUser(email: string, name: string, role: Role) {
@@ -71,4 +77,4 @@ function isAdministrator(user: User) {
   return can(user, Permission.ADMIN);
 }
 
-export { User, createUser, createAnonymousUser, can, isAdministrator };
+export { User, userSchema, createUser, createAnonymousUser, can, isAdministrator };
