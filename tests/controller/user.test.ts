@@ -1,9 +1,9 @@
-import { validate } from "class-validator";
 import { Context } from "koa";
 import { getManager } from "typeorm";
+import { validate } from "class-validator";
 
-import UserController from "../../src/controller/user";
 import { getRole, Role } from "../../src/models/role";
+import UserController from "../../src/controller/user";
 import { createUser, User } from "../../src/models/user";
 
 const role: Role = getRole("User");
@@ -25,6 +25,8 @@ jest.mock("typeorm", () => {
     JoinColumn: doNothing,
     CreateDateColumn: doNothing,
     UpdateDateColumn: doNothing,
+    ManyToOne: doNothing,
+    OneToMany: doNothing,
   };
 });
 
@@ -180,7 +182,10 @@ describe("User controller", () => {
   });
 
   it("updateUser should return 400 if there are validation errors.", async () => {
-    const userRepository = { save: jest.fn().mockReturnValue(user) };
+    const userRepository = {
+      findOne: jest.fn().mockReturnValueOnce(user),
+      save: jest.fn().mockReturnValue(user),
+    };
     (getManager as jest.Mock).mockReturnValue({
       getRepository: () => userRepository,
     });

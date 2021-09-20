@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,6 +12,7 @@ import { IsEmail, Length } from "class-validator";
 
 import { Permission } from "./permission";
 import { Role, hasPermission, getRole } from "./role";
+// import { Post } from "./post";
 
 @Entity()
 class User {
@@ -29,21 +31,39 @@ class User {
   @Column({ default: false })
   confirmed: boolean;
 
+  @Column({ length: 64})
+  location: string;
+
+  @Column({ length: 64})
+  aboutMe: string;
+
+  @Column({ length: 32 })
+  avatar: string;
+
   @OneToOne(() => Role, (role) => role.user)
   @JoinColumn()
   role: Role;
 
+  // @OneToMany(() => Post, post => post.user)
+  // posts: Post[]
+
   @CreateDateColumn()
-  created: Date;
+  memberSince: Date;
 
   @UpdateDateColumn()
-  updated: Date;
+  lastSeen: Date;
 }
 
 const userSchema = {
   id: { type: "number", required: true, example: 1 },
   name: { type: "string", required: true, example: "Aaron So" },
   email: { type: "string", required: true, example: "aaron.so@test.com" }
+}
+
+const profileSchema = {
+  name: { type: "string", required: true, example: "Aaron So" },
+  location: { type: "string", required: true, example: "Victoria, Virginia" },
+  aboutMe: { type: "string", required: true, example: "I like to cook and eat." },
 }
 
 function createUser(email: string, name: string, role: Role) {
@@ -77,4 +97,4 @@ function isAdministrator(user: User) {
   return can(user, Permission.ADMIN);
 }
 
-export { User, userSchema, createUser, createAnonymousUser, can, isAdministrator };
+export { User, userSchema, profileSchema, createUser, createAnonymousUser, can, isAdministrator };

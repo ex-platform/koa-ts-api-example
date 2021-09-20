@@ -91,10 +91,16 @@ export default class UserController {
   @body(userSchema)
   public static async updateUser(ctx: Context): Promise<void> {
     // update the user by specified id
-    // build up entity user to be updated
     const userRepository: Repository<User> = getManager().getRepository(User);
-    const userToBeUpdated: User = new User();
-    userToBeUpdated.id = +ctx.params.id || 0; // will always have a number, this will avoid errors
+    const userToBeUpdated: User = await userRepository.findOne({ id: +ctx.params.id || 0});
+
+    if (!userToBeUpdated) {
+      // check if a user with the specified id exists
+      ctx.status = 400;
+      ctx.body = "The user you are trying to update doesn't exist in the db";
+      return
+    }
+
     userToBeUpdated.name = ctx.request.body.name;
     userToBeUpdated.email = ctx.request.body.email;
 
@@ -104,10 +110,6 @@ export default class UserController {
     if (errors.length > 0) {
       ctx.status = 400;
       ctx.body = errors;
-    } else if (!(await userRepository.findOne(userToBeUpdated.id))) {
-      // check if a user with the specified id exists
-      ctx.status = 400;
-      ctx.body = "The user you are trying to update doesn't exist in the db";
     } else if (
       await userRepository.findOne({
         id: Not(Equal(userToBeUpdated.id)),
