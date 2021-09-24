@@ -12,7 +12,7 @@ import { IsEmail, Length } from "class-validator";
 
 import { Permission } from "./permission";
 import { Role, hasPermission, getRole } from "./role";
-// import { Post } from "./post";
+import { Post } from "./post";
 
 @Entity()
 class User {
@@ -44,8 +44,8 @@ class User {
   @JoinColumn()
   role: Role;
 
-  // @OneToMany(() => Post, post => post.user)
-  // posts: Post[]
+  @OneToMany(() => Post, post => post.user)
+  posts: Post[]
 
   @CreateDateColumn()
   memberSince: Date;
@@ -55,7 +55,6 @@ class User {
 }
 
 const userSchema = {
-  id: { type: "number", required: true, example: 1 },
   name: { type: "string", required: true, example: "Aaron So" },
   email: { type: "string", required: true, example: "aaron.so@test.com" }
 }
